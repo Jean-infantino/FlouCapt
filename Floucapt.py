@@ -3,35 +3,39 @@
 
 """
 ------------------------------------------------
-Class Floucapt
+Class FlouCapt
 ------------------------------------------------
-date: 19/03/2014
+authors: Kévin Renévot and Thomas Elain
 ------------------------------------------------
-version : 1.2
+date: 26/03/2014
+------------------------------------------------
+version : 1.3
 ------------------------------------------------
 
 """
 
-import sys, os
-import cv2 as cv
-import time
+import cv, cv2
+import os, time
+import numpy
 from PIL import Image
+import TimeException
 
-class Floucapt:
+class FlouCapt:
   
     def faceDetection (image):
         """  Detect the faces on the picture passed in parameter and return the area of faces detected  """
 
-        img = cv.imread(image) # Picture loading in memory
+        # Picture loading in memory
+        img = cv2.imread (image) 
 
-        if not img.data: 
-            print ("Erreur d'ouverture de l'image")
+        faceModel = cv2.CascadeClassifier ("/usr/share/OpenCV/haarcascades/haarcascade_frontalface_alt2.xml") 
+        faces = faceModel.detectMultiScale (img)
 
-        faceModel = cv.CascadeClassifier ("/usr/share/OpenCV/haarcascades/haarcascade_frontalface_alt2.xml") 
-     
-        faces = faceModel.detectMultiScale (img, 1.3, 4, cv.cv.CV_HAAR_SCALE_IMAGE, (20,20))   # Face detection
-
-        faces [:, 2:] = faces [:, 2:] + faces [:, :2]
+        # Throws an exception if no face is detected on the image
+        try:
+            faces [:, 2:] = faces [:, 2:] + faces [:, :2]
+        except TypeError:
+            print ("No face detected")
 
         return faces
 
@@ -39,15 +43,12 @@ class Floucapt:
     def faceBlurring (faces, image):
         """  Apply a blur on face detected thanks to the first parameter and return the picture blurred  """
 
-        img = cv.imread (image)
-
-        if not img.data: 
-            print ("Erreur d'ouverture de l'image")
+        img = cv2.imread (image)
 
         for x1, y1, x2, y2 in faces:
 
-            faceDetected = img[y1:y2, x1:x2]
-            faceDetected = cv.GaussianBlur(faceDetected,(69,69),0)
+            faceDetected = img [y1:y2, x1:x2]
+            faceDetected = cv2.GaussianBlur(faceDetected,(69,69),0)
 
             img [y1:y2, x1:x2] = faceDetected
 
@@ -60,29 +61,36 @@ class Floucapt:
         date = time.strftime('%Y-%m-%d', time.localtime())
         hourMinSec = time.strftime('%H:%M:%S', time.localtime())
 
-        folder = "img/"
+        folder = "img/" + date + "/"
 
-        if not os.path.isdir (folder):
-            os.makedirs (folder)
+        # If the folder doesn't exist
+        if not os.path.isdir( folder ):
+            os.makedirs( folder )
 
         fileName = date + "-" + hourMinSec + ".jpg"
-        save = cv.imwrite (folder + fileName, img)
+        cv2.imwrite (folder + fileName, img)
+        fileName = "../../current.jpg"
+        cv2.imwrite (folder + fileName, img)
 
-        fileName = "current.jpg"
-        save = cv.imwrite (folder + fileName, img)
+
+    def getImageCapture (videoFlow):
+        """  Capture the current image of camera/IP camera video flow and save it in current.jpg file  """
+
+        capture = cv.CaptureFromFile (videoFlow)
+        frame = cv.QueryFrame (capture)
+        image = cv.SaveImage ("current.jpg", frame)
 
 
     if __name__ == "__main__":
+        
+        while True:
+            # The url camera video flow, you may have to modify it according to the IP camera
+            video = "http://192.168.0.4:81/snapshot.cgi?user=admin&pwd=&"     
+            
+            getImageCapture (video)
+            faces = faceDetection ("current.jpg")
+            img = faceBlurring (faces, "current.jpg")
+            saveImage (img)
 
-        """  Allowed file formats : png,jpg, jpeg
-             Every picture files will be processed (detection and blurring of the faces) abd then saved.
-             Files containing 'faces' at the beginning of their names are not processed  """
-
-        for file in os.listdir (".") :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
-
-            if file.startswith ("visage") : continue # déjà traité
-
-            if os.path.splitext(file)[-1].lower() in [".jpg", ".jpeg", ".png" ] :
-                faces = faceDetection (file)
-                img = faceBlurring (faces, file)
-                saveImage (img)
+            # Wait of 30 sec
+            time.sleep (30)
