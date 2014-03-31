@@ -1,24 +1,21 @@
-#!/usr/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 """
-------------------------------------------------
+================================================
 Class FlouCapt
-------------------------------------------------
+================================================
 authors: Kévin Renévot and Thomas Elain
-------------------------------------------------
-date: 26/03/2014
-------------------------------------------------
-version : 1.3
-------------------------------------------------
+================================================
+date: 27/03/2014
+================================================
+version : 1.4
+================================================
 
 """
 
-import cv, cv2
-import os, time
-import numpy
+import cv, cv2, os, time
 from PIL import Image
-import TimeException
 
 class FlouCapt:
   
@@ -34,6 +31,7 @@ class FlouCapt:
         # Throws an exception if no face is detected on the image
         try:
             faces [:, 2:] = faces [:, 2:] + faces [:, :2]
+            print ("Face detected")
         except TypeError:
             print ("No face detected")
 
@@ -61,13 +59,13 @@ class FlouCapt:
         date = time.strftime('%Y-%m-%d', time.localtime())
         hourMinSec = time.strftime('%H:%M:%S', time.localtime())
 
-        folder = "img/" + date + "/"
+        folder = "img/history/" + date + "/"
 
         # If the folder doesn't exist
         if not os.path.isdir( folder ):
             os.makedirs( folder )
 
-        fileName = date + "-" + hourMinSec + ".jpg"
+        fileName = hourMinSec + ".jpg"
         cv2.imwrite (folder + fileName, img)
         fileName = "../../current.jpg"
         cv2.imwrite (folder + fileName, img)
@@ -78,19 +76,28 @@ class FlouCapt:
 
         capture = cv.CaptureFromFile (videoFlow)
         frame = cv.QueryFrame (capture)
-        image = cv.SaveImage ("current.jpg", frame)
+        image = cv.SaveImage ("img/current.jpg", frame)
+
+
+    def getCameraAddress():
+        """  Return the camera/IP camera address contained in text file  """
+
+        fil = open ('Camera_address', 'r')
+        addressList = fil.readlines(1)
+        address = addressList [0]
+        fil.close()
+
+        return address
 
 
     if __name__ == "__main__":
         
         while True:
-            # The url camera video flow, you may have to modify it according to the IP camera
-            video = "http://192.168.0.4:81/snapshot.cgi?user=admin&pwd=&"     
-            
+            video = getCameraAddress()              
             getImageCapture (video)
-            faces = faceDetection ("current.jpg")
-            img = faceBlurring (faces, "current.jpg")
+            faces = faceDetection ("img/current.jpg")
+            img = faceBlurring (faces, "img/current.jpg")
             saveImage (img)
 
             # Wait of 30 sec
-            time.sleep (30)
+            time.sleep (3)

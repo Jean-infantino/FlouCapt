@@ -1,0 +1,101 @@
+/*
+=============================================================
+FlouCapt.css
+=============================================================
+authors: Antoine Boucher and Thomas Elain
+=============================================================
+date: 27/03/2014
+=============================================================
+version : 1.4
+=============================================================
+*/
+
+html {
+	width:100%;
+	height:100%;
+}
+
+body {
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-color: black;
+	position:relative;
+	width:100%;
+	height:100%;
+	margin:0;
+}
+
+body > div {
+	position:absolute;
+	left:0px;
+	top:0px;
+	width:100%;
+	height:100%;
+	margin:0;
+	background-image:url("../img/current.jpg");
+	background-size:contain;
+	background-position:center;
+	background-repeat:no-repeat;
+}
+
+top {
+	position:absolute;
+	top:01%;
+	width:100%;
+	z-index:3;
+}
+
+center {
+	position:absolute;
+	bottom:01%;
+	width:100%;
+	height:20%;
+	z-index:2;
+}
+
+/* Ad Configuration */
+#ad {
+	width:50%;
+	height:100%;
+	background-image:url("../img/ads/ad1.png");
+	background-position:center;
+	background-repeat:no-repeat;
+	background-size:contain;
+	background-color:none;
+}
+
+/* Offline Message Configuration */
+#message {
+	display:none;
+	user-select:none;
+	position:absolute;
+	left:35%;
+	right:35%;
+	color:white;
+	font-size: 15px;
+	font-family: Verdana;
+	opacity: 1;
+	background-color:rgba(100,100,100,0.7);
+	border:2px rgba(255,255,255,0.7) ridge;
+	border-radius:5px;
+	box-shadow: 3px 3px 3px rgba(100,100,100,0.7);
+	text-align:center;
+	padding-top: 1%;
+	padding-bottom: 1%;
+	-webkit-user-select:none;
+	-moz-user-select:none;
+	-o-user-select:none;
+	-ms-user-select:none;
+	-khtml-user-select: none;
+	user-select:none;
+}
+
+/* Hide the Image */
+.notShowed {
+	z-index:-1;
+}
+
+/* Show the Image */
+.showed {
+	z-index:1;
+}

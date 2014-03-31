@@ -1,0 +1,13 @@
+CACHE MANIFEST
+ 
+CACHE :
+
+Floucapt.css
+../img/current.jpg
+
+FALLBACK : 
+
+../img/current.jpg
+
+Network : 
+*
